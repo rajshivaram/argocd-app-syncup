@@ -1,0 +1,44 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: springdemoapp
+  namespace: default
+  annotations:
+      argocd.argoproj.io/hook: PreSync
+      argocd.argoproj.io/hook: PostSync
+      argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/rajshivaram/argocd-app-config.git
+    targetRevision: HEAD
+    path: dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    syncOptions:
+      - CreateNameSpace=true
+    automated:
+      selfHeal: true
+      prune: true
+    preSync:
+      resources:
+        - kind: SQLInstance
+          resourceName: springdemo-postgres
+          action: apply
+          source:
+            path: postgres-claim.yaml
+    postSync:
+      resources:
+        - kind: Deployment
+          resourceName: springdemoapp
+          action: apply
+          source:
+            path: deployment.yaml
+        - kind: Service
+          resourceName: springdemoapp-service
+          action: apply
+          source:
+            path: service.yaml
