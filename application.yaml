@@ -29,16 +29,22 @@ spec:
           resourceName: springdemo-postgres
           action: apply
           source:
-            path: postgres-claim.yaml
+            repoURL: https://github.com/rajshivaram/argocd-app-config.git
+            targetRevision: HEAD
+            path: dev/postgres-claim.yaml
     postSync:
       resources:
         - kind: Deployment
           resourceName: springdemoapp
           action: apply
           source:
-            path: deployment.yaml
+            repoURL: https://github.com/rajshivaram/argocd-app-config.git
+            targetRevision: HEAD          
+            path: dev/deployment.yaml
         - kind: Service
           resourceName: springdemoapp-service
           action: apply
           source:
-            path: service.yaml
+            repoURL: https://github.com/rajshivaram/argocd-app-config.git
+            targetRevision: HEAD          
+            path: dev/service.yaml
